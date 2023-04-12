@@ -1,0 +1,21 @@
+[package]
+name = "extension-fn"
+version = "1.0.0"
+keywords = ["macros", "async"]
+edition = "2021"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/AlexSherbinin/extension-fn"
+documentation = "https://docs.rs/extension-fn"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+case = "1.0.0"
+proc-macro2 = "1.0.56"
+quote = "1.0.26"
+syn = { version = "2.0.13", features = ["full"]}
+
+[dev-dependencies]
+async-trait = "0.1.68"
