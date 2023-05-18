@@ -1,7 +1,7 @@
 [package]
 name = "extension-fn"
 description = "No boilerplate code for extension function definitions"
-version = "1.1.0"
+version = "1.1.1"
 keywords = ["macros", "async"]
 edition = "2021"
 readme = "README.md"
