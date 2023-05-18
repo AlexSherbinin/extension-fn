@@ -17,9 +17,8 @@ impl Builder {
             sealed_trait_mod: Ident::new(&format!("__seal_{}", function_ident.to_string().to_camel()), Span::mixed_site())
         }
     }
-    pub fn build(self, mut fn_implementation: ItemFn, args: Args) -> TokenStream {
+    pub fn build(self, fn_implementation: ItemFn, args: Args) -> TokenStream {
         let generics = args.generics.unwrap_or_default();
-        fn_implementation.vis = Visibility::Inherited;
 
         let (trait_definition, trait_implementation) = match args.kind {
             ArgKind::Type(ty) => (self.define_trait(&fn_implementation, generics.clone()), self.impl_type(fn_implementation, ty, generics)),
@@ -36,11 +35,13 @@ impl Builder {
         }
     }
 
-    fn impl_trait_bound(&self, fn_implementation: ItemFn, _bound: Punctuated<TypeParamBound, Plus>, generics: Generics) -> TokenStream {
+    fn impl_trait_bound(&self, mut fn_implementation: ItemFn, _bound: Punctuated<TypeParamBound, Plus>, generics: Generics) -> TokenStream {
         let _attrs = attrs_tokenstream(&fn_implementation.attrs);
         let trait_ident = &self.trait_ident;
         let sealed_trait_mod = &self.sealed_trait_mod;
         let _signature = &fn_implementation.sig;
+
+        fn_implementation.vis = Visibility::Inherited;
 
         let (impl_generics, ty_generics, _) = generics.split_for_impl();
 
@@ -53,9 +54,11 @@ impl Builder {
         })
     }
 
-    fn impl_type(&self, fn_implementation: ItemFn, impl_type: Type, generics: Generics) -> TokenStream {
+    fn impl_type(&self, mut fn_implementation: ItemFn, impl_type: Type, generics: Generics) -> TokenStream {
         let trait_ident = &self.trait_ident;
         let sealed_trait_mod = &self.sealed_trait_mod;
+
+        fn_implementation.vis = Visibility::Inherited;
 
         let (impl_generics, ty_generics, _) = generics.split_for_impl();
 
