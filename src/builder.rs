@@ -1,7 +1,7 @@
 use case::CaseExt;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::{quote, ToTokens};
-use syn::{ItemFn, Visibility, Attribute, Generics, Type, punctuated::Punctuated, TypeParamBound, token::Plus, parse2};
+use syn::{ItemFn, Visibility, Attribute, Generics, Type, punctuated::Punctuated, TypeParamBound, token::Plus, parse2, FnArg};
 
 use crate::args::{Args, ArgKind};
 
@@ -73,7 +73,15 @@ impl Builder {
     fn define_trait(&self, fn_implementation: &ItemFn, generics: Generics) -> TokenStream {
         let attrs = attrs_tokenstream(&fn_implementation.attrs);
         let visibility = &fn_implementation.vis;
-        let signature = &fn_implementation.sig;
+        let mut signature = fn_implementation.sig.clone();
+        signature.inputs = signature.inputs.into_iter().map(|mut input| {
+            if let FnArg::Receiver(ref mut receiver) = input {
+                if receiver.reference.is_none() {
+                    receiver.mutability = None;
+                }
+            }
+            input
+        }).collect();
 
         let (_, ty_generics, _) = generics.split_for_impl();
 
